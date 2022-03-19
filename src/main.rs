@@ -48,7 +48,7 @@ async fn answer(
             let sys = System::new_all();
             let mut hw_info = String::new();
             for disk in sys.disks() {
-                println!("free {:?}% of {:?}Gb", ((disk.available_space()*100)/disk.total_space()), disk.total_space()/1024/1024/1024);
+                // println!("free {:?}% of {:?}Gb", ((disk.available_space()*100)/disk.total_space()), disk.total_space()/1024/1024/1024);
                 hw_info.push_str(&format!("free {:?}% of {:?}Gb", ((disk.available_space()*100)/disk.total_space()), disk.total_space()/1024/1024/1024).to_string());
                 hw_info.push_str("\n");
             }
