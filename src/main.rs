@@ -34,7 +34,7 @@ async fn answer(
         Command::GetIP => {
             let url = "https://api.ipify.org?format=json";
             let response = reqwest::get(url).await?.json::<HashMap<String, String>>().await?;
-            bot.send_message(message.chat.id, format!("{}", json!(response)["ip"].to_string())).await?
+            bot.send_message(message.chat.id, format!("{}", json!(response)["ip"].to_string().replace("\"", ""))).await?
         }
 
         Command::UsernameAndAge { username, age } => {
@@ -49,11 +49,14 @@ async fn answer(
             let mut hw_info = String::new();
             for disk in sys.disks() {
                 // println!("free {:?}% of {:?}Gb", ((disk.available_space()*100)/disk.total_space()), disk.total_space()/1024/1024/1024);
-                hw_info.push_str(&format!("free {:?}% of {:?}Gb", ((disk.available_space()*100)/disk.total_space()), disk.total_space()/1024/1024/1024).to_string());
+                hw_info.push_str(&format!("free {}% of {}Gb", ((disk.available_space()*100)/disk.total_space()), disk.total_space()/1024/1024/1024).to_string());
                 hw_info.push_str("\n");
             }
 
-            hw_info.push_str(&format!("RAM used {}% from {}GB and {}% swap", (sys.used_memory()*100)/sys.total_memory(), sys.total_memory()/1024/1024, (sys.used_swap()*100)/sys.total_swap()).to_string());
+            hw_info.push_str(&format!("RAM used {}% from {:.1}GB and {}% swap", (sys.used_memory()*100)/sys.total_memory(), sys.total_memory() as f32 /1024.0/1024.0, (sys.used_swap()*100)/sys.total_swap()).to_string());
+            hw_info.push_str("\n");
+
+            hw_info.push_str(&format!("upt {} min -- bt {} (?)", sys.uptime()/60, sys.boot_time()));
 
             bot.send_message(message.chat.id, hw_info).await?
         }
